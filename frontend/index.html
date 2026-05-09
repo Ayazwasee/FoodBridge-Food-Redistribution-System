@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FoodBridge — Food Redistribution Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="logo" href="#" onclick="switchTab('listings'); return false;">
+        <span class="logo-leaf">🌿</span>
+        <span>FoodBridge</span>
+      </a>
+      <div class="nav-tabs" id="navTabs">
+        <button class="nav-tab active" data-tab="listings">Browse Food</button>
+        <button class="nav-tab" data-tab="donate">Donate</button>
+        <button class="nav-tab" data-tab="claim">Claim</button>
+        <button class="nav-tab" data-tab="track">Track</button>
+        <button class="nav-tab register-tab" data-tab="register">Register</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BROWSE / HERO TAB -->
+  <div class="tab-page active" id="tab-listings">
+    <header class="hero">
+      <div class="hero-text">
+        <span class="eyebrow">Zero-waste food redistribution</span>
+        <h1>Good food<br><em>shouldn't</em> go<br>to waste.</h1>
+        <p class="hero-sub">FoodBridge connects restaurants with NGOs in real-time. <strong>No account needed</strong> to list or claim food.</p>
+        <div class="hero-btns">
+          <button class="btn-hero-primary" onclick="switchTab('donate')">📦 Donate Surplus</button>
+          <button class="btn-hero-outline" onclick="switchTab('claim')">🤝 Claim Food</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-badge-grid">
+          <div class="hero-badge" id="statListings"><span class="badge-num">—</span><span class="badge-label">Active Listings</span></div>
+          <div class="hero-badge green" id="statClaims"><span class="badge-num">—</span><span class="badge-label">Claims Made</span></div>
+          <div class="hero-badge amber" id="statUsers"><span class="badge-num">—</span><span class="badge-label">Registered Users</span></div>
+        </div>
+        <div class="impact-pill">🌍 Every listing prevents ~2kg food waste</div>
+      </div>
+    </header>
+
+    <section class="live-section">
+      <div class="live-header">
+        <div>
+          <h2 class="live-title">Available Food <span class="live-dot"></span></h2>
+          <p class="live-sub">Auto-refreshes every 5 seconds</p>
+        </div>
+        <button class="btn-refresh" id="refreshBtn">↻ Refresh Now</button>
+      </div>
+      <div id="listingContainer" class="listing-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- DONATE TAB -->
+  <div class="tab-page hidden" id="tab-donate">
+    <div class="page-header">
+      <span class="page-tag">For Restaurants &amp; Food Businesses</span>
+      <h2>List Surplus Food</h2>
+      <p>No account needed. Your listing goes live instantly for NGOs to see and claim.</p>
+    </div>
+    <div class="centered-card">
+      <form id="listingForm" class="smart-form" autocomplete="off">
+        <div class="form-row">
+          <div class="field">
+            <label>Restaurant / Business Name <span class="req">*</span></label>
+            <input type="text" id="restaurantName" placeholder="e.g. Spice Garden Restaurant" required />
+          </div>
+          <div class="field">
+            <label>Food Type <span class="req">*</span></label>
+            <input type="text" id="foodType" placeholder="e.g. Biryani, Bread, Mixed Veg" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Quantity <span class="req">*</span></label>
+            <input type="text" id="quantity" placeholder="e.g. 50 portions, 10 kg" required />
+          </div>
+          <div class="field">
+            <label>Pickup Location <span class="req">*</span></label>
+            <input type="text" id="location" placeholder="e.g. Sector 14, Gurgaon" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Contact Phone</label>
+            <input type="text" id="contactPhone" placeholder="Your phone number" />
+          </div>
+          <div class="field">
+            <label>Available for (hours)</label>
+            <div class="hour-picker">
+              <button type="button" class="hour-btn" onclick="changeHours(-1)">−</button>
+              <input type="number" id="expiryHours" value="4" min="1" max="48" />
+              <button type="button" class="hour-btn" onclick="changeHours(1)">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Additional Notes</label>
+          <textarea id="notes" placeholder="Dietary info, packaging, pickup instructions…"></textarea>
+        </div>
+        <button type="submit" class="btn-submit">📦 Post Food Listing</button>
+      </form>
+      <div id="donateResult" class="result-banner hidden"></div>
+    </div>
+  </div>
+
+  <!-- CLAIM TAB -->
+  <div class="tab-page hidden" id="tab-claim">
+    <div class="page-header">
+      <span class="page-tag">For NGOs &amp; Community Organizations</span>
+      <h2>Claim Available Food</h2>
+      <p>No account needed. Browse listings, click <strong>Claim This</strong> on a card — the ID fills automatically.</p>
+    </div>
+    <div class="tip-bar">
+      💡 <strong>Quick way:</strong> Go to <a href="#" onclick="switchTab('listings'); return false;">Browse Food</a>, find a listing and click "Claim This" — it auto-fills the ID below.
+    </div>
+    <div class="centered-card">
+      <form id="claimForm" class="smart-form" autocomplete="off">
+        <div class="field">
+          <label>Listing ID <span class="req">*</span></label>
+          <div class="id-field-wrap">
+            <input type="text" id="listingId" placeholder="Paste or auto-fill from a listing card" required />
+            <span class="id-preview" id="listingIdHint"></span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>NGO / Organization Name <span class="req">*</span></label>
+            <input type="text" id="ngoName" placeholder="e.g. Helping Hands Foundation" required />
+          </div>
+          <div class="field">
+            <label>Contact Number <span class="req">*</span></label>
+            <input type="text" id="ngoContact" placeholder="WhatsApp or mobile" required />
+          </div>
+        </div>
+        <div class="field">
+          <label>Pickup Person (optional)</label>
+          <input type="text" id="pickupPerson" placeholder="Name of person collecting the food" />
+        </div>
+        <button type="submit" class="btn-submit green-btn">🤝 Confirm Claim</button>
+      </form>
+      <div id="claimResult" class="result-banner hidden"></div>
+    </div>
+  </div>
+
+  <!-- TRACK TAB -->
+  <div class="tab-page hidden" id="tab-track">
+    <div class="page-header">
+      <span class="page-tag">Manage &amp; Monitor</span>
+      <h2>Track Claims</h2>
+      <p>Update status when food is collected, or cancel if pickup is no longer possible.</p>
+    </div>
+    <div class="track-grid">
+      <div class="track-card green-card">
+        <div class="track-icon">✅</div>
+        <h3>Mark as Collected</h3>
+        <p>Confirm food was successfully picked up by the NGO.</p>
+        <form id="collectForm" class="smart-form">
+          <div class="field">
+            <label>Claim ID <span class="req">*</span></label>
+            <input type="text" id="claimId" placeholder="Claim ID from confirmation" required />
+          </div>
+          <button type="submit" class="btn-submit green-btn">Mark Collected</button>
+        </form>
+      </div>
+      <div class="track-card red-card">
+        <div class="track-icon">❌</div>
+        <h3>Cancel a Claim</h3>
+        <p>Release the food so another NGO can claim it.</p>
+        <form id="cancelForm" class="smart-form">
+          <div class="field">
+            <label>Claim ID <span class="req">*</span></label>
+            <input type="text" id="cancelClaimId" placeholder="Claim ID to cancel" required />
+          </div>
+          <button type="submit" class="btn-submit red-btn">Cancel Claim</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="data-panel">
+      <h3>Data Explorer</h3>
+      <div class="data-toolbar">
+        <button class="btn-data" id="loadClaims">Load Claims</button>
+        <button class="btn-data" id="loadListings">Load Listings</button>
+        <button class="btn-data" id="loadUsers">Load Users</button>
+        <button class="btn-data dim" id="clearOutput">Clear</button>
+      </div>
+      <pre id="output">// Click a button above to view API data</pre>
+    </div>
+  </div>
+
+  <!-- REGISTER TAB -->
+  <div class="tab-page hidden" id="tab-register">
+    <div class="page-header">
+      <span class="page-tag optional-tag">Optional — But Recommended</span>
+      <h2>Create an Account</h2>
+      <p>Registration is <strong>not required</strong> to donate or claim food. An account helps you track history and manage listings.</p>
+    </div>
+    <div class="register-layout">
+      <div class="centered-card register-form-card">
+        <form id="registerForm" class="smart-form" autocomplete="off">
+          <div class="form-row">
+            <div class="field">
+              <label>Full Name <span class="req">*</span></label>
+              <input type="text" id="name" placeholder="Your name or organization name" required />
+            </div>
+            <div class="field">
+              <label>Email <span class="req">*</span></label>
+              <input type="email" id="email" placeholder="your@email.com" required />
+            </div>
+          </div>
+          <div class="field">
+            <label>I am a… <span class="req">*</span></label>
+            <div class="role-selector">
+              <label class="role-opt" id="role-restaurant">
+                <input type="radio" name="role" value="Restaurant" />
+                <div class="role-card-inner">
+                  <span class="role-emoji">🍽️</span>
+                  <span class="role-name">Restaurant</span>
+                  <span class="role-desc">I donate surplus food</span>
+                </div>
+              </label>
+              <label class="role-opt" id="role-ngo">
+                <input type="radio" name="role" value="NGO" />
+                <div class="role-card-inner">
+                  <span class="role-emoji">🤝</span>
+                  <span class="role-name">NGO</span>
+                  <span class="role-desc">I collect and distribute</span>
+                </div>
+              </label>
+              <label class="role-opt" id="role-admin">
+                <input type="radio" name="role" value="Admin" />
+                <div class="role-card-inner">
+                  <span class="role-emoji">⚙️</span>
+                  <span class="role-name">Admin</span>
+                  <span class="role-desc">I manage the platform</span>
+                </div>
+              </label>
+            </div>
+            <input type="hidden" id="role" />
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Phone</label>
+              <input type="text" id="phone" placeholder="Contact number" />
+            </div>
+            <div class="field">
+              <label>Address / City</label>
+              <input type="text" id="address" placeholder="City or full address" />
+            </div>
+          </div>
+          <button type="submit" class="btn-submit">Create Account →</button>
+        </form>
+        <div id="registerResult" class="result-banner hidden"></div>
+      </div>
+      <div class="register-benefits">
+        <div class="benefit-card">
+          <span class="benefit-icon">⚡</span>
+          <div>
+            <strong>No account needed</strong>
+            <p>List and claim food right now — it takes 30 seconds, no login required.</p>
+          </div>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">📊</span>
+          <div>
+            <strong>Track your impact</strong>
+            <p>See how many meals you've donated or collected over time.</p>
+          </div>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">🔔</span>
+          <div>
+            <strong>Get notified</strong>
+            <p>Receive alerts when new food is listed in your area (coming soon).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-logo">🌿 FoodBridge</span>
+      <p>Cloud Computing PBL · Node.js · MongoDB · Docker · AWS-ready</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
