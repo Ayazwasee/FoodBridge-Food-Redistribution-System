@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: food_redistribution_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  user-service:
+    build: .
+    container_name: food_user_service
+    command: node services/user-service/server.js
+    environment:
+      PORT: 5001
+      MONGO_URI: mongodb://mongo:27017/user_service_db
+    depends_on:
+      - mongo
+    ports:
+      - "5001:5001"
+
+  listing-service:
+    build: .
+    container_name: food_listing_service
+    command: node services/listing-service/server.js
+    environment:
+      LISTING_PORT: 5004
+      LISTING_MONGO_URI: mongodb://mongo:27017/listing_service_db
+    depends_on:
+      - mongo
+    ports:
+      - "5004:5004"
+
+  claim-service:
+    build: .
+    container_name: food_claim_service
+    command: node services/claim-service/server.js
+    environment:
+      CLAIM_PORT: 5005
+      CLAIM_MONGO_URI: mongodb://mongo:27017/claim_service_db
+      LISTING_SERVICE_URL: http://listing-service:5004
+    depends_on:
+      - mongo
+      - listing-service
+    ports:
+      - "5005:5005"
+
+volumes:
+  mongo_data:
