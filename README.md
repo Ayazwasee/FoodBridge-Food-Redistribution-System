@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Food Redistribution Cloud Project
 
 Beginner-friendly cloud computing project built with:
