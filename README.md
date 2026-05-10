@@ -37,5 +37,3 @@ docker compose up --build
 - Update API URLs in `frontend/app.js` if you deploy services to AWS.
 - For AWS, host frontend on S3 and backend services on EC2.
 - Use Node.js 18 or higher because the claim service uses built-in `fetch`.
-
-# food-redistribution-system
