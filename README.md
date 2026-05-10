@@ -1,4 +1,4 @@
-# Food Redistribution Cloud Project
+# FoodBridge: Food Redistribution System
 
 Beginner-friendly cloud computing project built with:
 - Node.js + Express
